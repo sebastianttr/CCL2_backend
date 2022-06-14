@@ -44,21 +44,21 @@ const authenticateJWT = async (req,res,next) => {
     //console.log(req.baseUrl + req.path)   
     
     if(bypassPaths.includes(req.baseUrl + req.path)){
-        console.log("Path is bypassed")
+        //console.log("Path is bypassed")
         next();
         return;
     }
     else {
-        console.log(req.headers)
-        const token = req.headers["authentication"].substring(7)
-        console.log(token)
+        //console.log(req.headers)
+        const token = req.headers["authorization"].substring(7)
+        //console.log(token)
 
         if(token){
             jwt.verify(token,ACCESS_TOKEN_SECRET,(err,user) => {
                 if(err){
                     return res.sendStatus(403);
                 }
-                console.log(user);
+                //console.log(user);
                 req.user = user;
                 next();
             })

@@ -39,8 +39,6 @@ const authenticateUser = async ({email,password}, users,res) => {
 }
 
 const authenticateJWT = async (req,res,next) => {
-    
-
     //console.log(req.baseUrl + req.path)   
     
     if(bypassPaths.includes(req.baseUrl + req.path)){

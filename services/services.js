@@ -2,6 +2,7 @@ const fs = require('fs-extra')
 const path = require("path")
 const { exec } = require("child_process");
 const { runMain } = require('module');
+const dirTree = require('directory-tree');
 
 
 const initService = (serviceData) => {
@@ -32,6 +33,22 @@ const initService = (serviceData) => {
     runProject("npm run live-server","."+serviceData.servicePath);
 
 }
+
+const getDirectoryTree = (serviceData) => {
+    return dirTree("."+serviceData.servicePath,{exclude:/node_modules/,attributes: ["type", "extension"]})
+}
+
+const getFileContent = (filePath) => new Promise((resolve,reject) => {
+    fs.readFile("." + filePath).then((data)=> {
+        resolve(data.toString());
+    })
+    .catch(error => {
+        if(error instanceof Error){
+            console.error("Error: " + error);
+            reject(error);
+        }
+    })
+})
 
 const installProjectDependencies = (cwd) => {
     exec("npm install" ,{cwd:cwd}, (error, stdout, stderr) => {
@@ -79,5 +96,7 @@ module.exports = {
     initService,
     installProjectDependency,
     installProjectDependencies,
+    getDirectoryTree,
+    getFileContent
 
 }

@@ -52,11 +52,21 @@ const getServices = () => new Promise((resolve,reject) => {
 
         }
     })
-
 })
 
 const getService = (id) => new Promise((resolve,reject) => {
-    resolve();
+    let sql = "SELECT * FROM BrokrServices WHERE ID = " + parseInt(id);
+
+    db.query(sql,(err,res,fields) => {
+        if(err){
+            console.error(err);
+            reject(err);
+        }
+        else {
+            //console.log(res)
+            resolve(res[0]);
+        }
+    })
 })
 
 const createService = (user,serviceData) => new Promise(async (resolve,reject) => {
@@ -68,7 +78,7 @@ const createService = (user,serviceData) => new Promise(async (resolve,reject) =
     serviceData.servicePath = servicePath;
     serviceData.port = usablePort;
 
-    // TODO: INSERT INTO DATABASE
+    // INSERT INTO DATABASE
 
     let sql = " INSERT INTO `BrokrServices` (`userID`, `serviceName`, `description`, `nodeVersion`,`servicePath`,`port`) VALUES " + 
     "(" + db.escape(user.id) + ", " 
@@ -88,10 +98,8 @@ const createService = (user,serviceData) => new Promise(async (resolve,reject) =
         }
     })
 
-    // TODO: COPY TEMPLATE TO PROJECTS FOLDER
-
+    // COPY TEMPLATE TO PROJECTS FOLDER
     services.initService(serviceData);
-
 
 })
 

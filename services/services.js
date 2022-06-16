@@ -1,6 +1,6 @@
 const fs = require('fs-extra')
 const path = require("path")
-const { exec } = require("child_process");
+const { exec,execFile, spawn } = require("child_process");
 const { runMain } = require('module');
 const dirTree = require('directory-tree');
 
@@ -30,7 +30,7 @@ const initService = (serviceData) => {
     installProjectDependencies("."+serviceData.servicePath);
 
     // run the project with nodemon
-    runProject("npm run live-server","."+serviceData.servicePath);
+    //runProject("npm run live-server","."+serviceData.servicePath);
 
 }
 
@@ -50,9 +50,20 @@ const getFileContent = (filePath) => new Promise((resolve,reject) => {
     })
 })
 
+const setFileContent = (filePath,content) => new Promise((resolve,reject) => {
+    fs.writeFile("."+filePath,content,{encoding:'utf8'},(err) => {
+        if(err instanceof Error){
+            reject(err);
+        }
+        else {
+            resolve();
+        }
+    })
+})
+
 const installProjectDependencies = (cwd) => {
     exec("npm install" ,{cwd:cwd}, (error, stdout, stderr) => {
-        
+    
         if (error) {
             console.log(`error: ${error}`);
         }
@@ -77,8 +88,10 @@ const installProjectDependency = (cwd,dependency) => {
     });
 }
 
-const runProject = (cmd,cwd) => {
+const runProject = async (cmd,cwd,callback) => {
+    /*
     exec(cmd,{cwd:cwd}, (error, stdout, stderr) => {
+        console.log("i am executed")
         
         if (error) {
             console.log(`error: ${error}`);
@@ -86,9 +99,21 @@ const runProject = (cmd,cwd) => {
         if (stderr) {
             console.log(`stderr: ${stderr}`);
         }
-        //console.log(`stdout: ${stdout}`);
+
+        callback(stdout);
+        console.log(`stdout: ${stdout}`);
         
     });
+    */
+
+    let ls = spawn('npm', ['run',"live-server"], {
+        cwd: cwd,        
+    })
+
+    ls.stdout.setEncoding('utf8');
+    ls.stderr.setEncoding('utf8');
+    ls.stdout.on('data', data => callback(data));
+    ls.stderr.on('data', data => callback(data));    
 }
 
 
@@ -97,6 +122,7 @@ module.exports = {
     installProjectDependency,
     installProjectDependencies,
     getDirectoryTree,
-    getFileContent
-
+    getFileContent,
+    setFileContent,
+    runProject
 }

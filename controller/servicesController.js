@@ -25,7 +25,7 @@ const createService = (req,res,next) => {
 const getUsablePort = (req,res,next) => {
     servicesModel.getUsablePort()
         .then((data) => {
-            console.log(data)
+            //console.log(data)
             res.send(data.toString());
         })
         .catch((err) => {
@@ -35,11 +35,11 @@ const getUsablePort = (req,res,next) => {
 
 const getDirectoryTree = (req,res,next) => {
     let projectID = decodeURIComponent(req.params.id);
-    console.log(projectID);
+    //console.log(projectID);
 
     servicesModel.getService(projectID)
     .then(data => {
-        console.log(data)
+        //(data)
         res.send(services.getDirectoryTree(data));
     })
 }
@@ -56,7 +56,15 @@ const getFileContent = (req,res,next) => {
 }
 
 const setFileContent = (req,res,next) => {
-
+    console.log("Body: "+ req.body.content)
+    services.setFileContent(req.query.path,req.body.content)
+        .then(() => {
+            res.sendStatus(200);
+        })
+        .catch((err)=> {
+            console.error(err)
+            res.status(500).send(err);
+        })
 }
 
 module.exports = {
@@ -64,5 +72,6 @@ module.exports = {
     createService,
     getUsablePort,
     getDirectoryTree,
-    getFileContent
+    getFileContent,
+    setFileContent
 }

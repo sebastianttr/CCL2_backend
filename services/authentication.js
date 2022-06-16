@@ -18,9 +18,9 @@ const checkPassword = async (password,hash) => {
 
 // stuff here
 const authenticateUser = async ({email,password}, users,res) => {
-    const user = users.find(u => u.email === email)
+    const user = users.find(u => u.email === email);
 
-    const pwIsOK = await checkPassword(password,user.password)
+    const pwIsOK = await checkPassword(password,user.password);
 
     if(user && pwIsOK) {
         const accessToken = jwt.sign({id:user.ID,email:user.email},ACCESS_TOKEN_SECRET);
@@ -29,12 +29,12 @@ const authenticateUser = async ({email,password}, users,res) => {
         //res.redirect("/users/"+user.id)
         res.send({
             accessToken:accessToken 
-        })
+        });
     }
     else{
         res.send({
             error:"user not found!"
-        })
+        });
     }
 }
 
@@ -67,7 +67,27 @@ const authenticateJWT = async (req,res,next) => {
     }
 }
 
+const authenticateJWTSimple = (token) => new Promise((resolve,reject) => {
+
+    token = token.substring(7);
+    //console.log(token)
+
+    if(token){
+        jwt.verify(token,ACCESS_TOKEN_SECRET,(err,user) => {
+            if(err){
+                reject(err);
+            }
+            resolve(user);
+        })
+    }
+    else{
+        reject("No token!");
+    }
+    
+})
+
 module.exports = {
     authenticateUser,
-    authenticateJWT
+    authenticateJWT,
+    authenticateJWTSimple
 }

@@ -26,10 +26,10 @@ const loginUser = (req,res,next) => {
 }
 
 const getUserData = (req,res,next) => {
-    console.log(req.user.id)
+    //console.log(req.user.id)
     brokrUserModel.getUser(req.user.id)
         .then((user) => {
-            console.log("User found")
+            //console.log("User found")
             res.status(200).send(user)
         })
         .catch((err) => {

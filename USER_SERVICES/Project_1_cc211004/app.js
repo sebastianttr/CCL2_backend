@@ -17,7 +17,6 @@ const path = require('path')
 const homeRoute = require('./routes/index')
 const usersRouter = require('./routes/users')
 
-
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(cookieParser())
@@ -41,5 +40,6 @@ app.use((req, res) => {
 
 // 
 app.listen(port, () => {
+	console.log("Changing some stuff so i can work!")
     console.log(`Server listening at http://localhost:${port}`)
 })

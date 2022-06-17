@@ -40,6 +40,5 @@ app.use((req, res) => {
 
 // 
 app.listen(port, () => {
-	console.log("Changing some stuff so i can work!")
     console.log(`Server listening at http://localhost:${port}`)
 })

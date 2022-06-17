@@ -2,7 +2,7 @@ const servicesModel = require("../models/servicesModel")
 const services = require("../services/services")
 
 const getServices = (req,res,next) => {
-    servicesModel.getServices()
+    servicesModel.getServices(req.user.id)
         .then((data) => {
             //console.log("data: " + data)
             res.send(data);
@@ -56,7 +56,7 @@ const getFileContent = (req,res,next) => {
 }
 
 const setFileContent = (req,res,next) => {
-    console.log("Body: "+ req.body.content)
+    //console.log("Body: "+ req.body.content)
     services.setFileContent(req.query.path,req.body.content)
         .then(() => {
             res.sendStatus(200);

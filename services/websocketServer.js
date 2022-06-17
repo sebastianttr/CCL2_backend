@@ -17,17 +17,34 @@ const handleConnections = () => {
     wss.on('connection', function connection(ws, req) {
         ws.on('message', message => {
             const msg = JSON.parse(message.toString())
-            console.log(msg)
             authentication.authenticateJWTSimple(msg.accessToken)
                 .then((user) => {
                     //ws.send("Started the process!");
                     if(msg.action.type == "runService"){
-                        console.log("is runService")
                         servicesModel.getService(msg.action.serviceID)
                             .then(service => {
-                                console.log(service)
-                                services.runProject(
-                                    'npm.cmd run start',
+                                services.runService(
+                                    'npm run start', // redo this 
+                                    "."+service.servicePath,
+                                    (stdData) => {
+                                        ws.send(stdData);
+                                    }
+                                );
+                            })
+                    }
+                    else if(msg.action.type == "stopService"){
+                        servicesModel.getService(msg.action.serviceID)
+                            .then(service => {
+                                services.stopService(
+                                    service.port
+                                );
+                            })
+                    }
+                    else if(msg.action.type == "shellCommand"){
+                        servicesModel.getService(msg.action.serviceID)
+                            .then(service => {
+                                services.executeShell(
+                                    msg.action.command,
                                     "."+service.servicePath,
                                     (stdData) => {
                                         ws.send(stdData);

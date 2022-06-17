@@ -38,8 +38,8 @@ const getUsablePort = () => new Promise(async (resolve,reject) => {
     reject({error:"no port found."});
 })
 
-const getServices = () => new Promise((resolve,reject) => {
-    let sql = "SELECT * FROM BrokrServices";
+const getServices = (userID) => new Promise((resolve,reject) => {
+    let sql = "SELECT * FROM BrokrServices WHERE userID = " + parseInt(userID);
 
     db.query(sql,(err,res,fields) => {
         if(err){

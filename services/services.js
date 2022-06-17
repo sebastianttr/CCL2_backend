@@ -88,23 +88,7 @@ const installProjectDependency = (cwd,dependency) => {
     });
 }
 
-const runProject = async (cmd,cwd,callback) => {
-    /*
-    exec(cmd,{cwd:cwd}, (error, stdout, stderr) => {
-        console.log("i am executed")
-        
-        if (error) {
-            console.log(`error: ${error}`);
-        }
-        if (stderr) {
-            console.log(`stderr: ${stderr}`);
-        }
-
-        callback(stdout);
-        console.log(`stdout: ${stdout}`);
-        
-    });
-    */
+const runService = (cmd,cwd,callback) => {
 
     let ls = spawn('npm', ['run',"live-server"], {
         cwd: cwd,        
@@ -116,6 +100,33 @@ const runProject = async (cmd,cwd,callback) => {
     ls.stderr.on('data', data => callback(data));    
 }
 
+const stopService = (port) => {
+    //console.log(port)
+    exec(`lsof -i :${port} | awk '{print $2}'`,(error, stdout, stderr) => {
+        
+        if (error) {
+            console.log(`error: ${error}`);
+        }
+        if (stderr) {
+            console.log(`stderr: ${stderr}`);
+        }
+
+        const PID = stdout.replace("PID","").replaceAll("\n","");
+        //console.log(PID)
+        exec(`kill -9 ${PID}`);        
+    })
+}
+
+const executeShell = (command,cwd,callback) => {
+    let sh = exec(command,{cwd:cwd})
+
+    sh.stdout.setEncoding('utf8');
+    sh.stderr.setEncoding('utf8');
+    sh.stdout.on('data', data => callback(data));
+    sh.stderr.on('data', data => callback(data));  
+}
+
+
 
 module.exports = {
     initService,
@@ -124,5 +135,7 @@ module.exports = {
     getDirectoryTree,
     getFileContent,
     setFileContent,
-    runProject
+    runService,
+    stopService,
+    executeShell
 }

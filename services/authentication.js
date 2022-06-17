@@ -20,16 +20,22 @@ const checkPassword = async (password,hash) => {
 const authenticateUser = async ({email,password}, users,res) => {
     const user = users.find(u => u.email === email);
 
-    const pwIsOK = await checkPassword(password,user.password);
 
-    if(user && pwIsOK) {
-        const accessToken = jwt.sign({id:user.ID,email:user.email},ACCESS_TOKEN_SECRET);
 
-        //res.cookie("accessToken",accessToken);
-        //res.redirect("/users/"+user.id)
-        res.send({
-            accessToken:accessToken 
-        });
+    if(user) {
+        const pwIsOK = await checkPassword(password,user.password);
+
+        if(pwIsOK){
+            const accessToken = jwt.sign({id:user.ID,email:user.email},ACCESS_TOKEN_SECRET);
+            res.send({
+                accessToken:accessToken 
+            }); 
+        }
+        else {
+            res.send({
+                error:"user not found!"
+            });
+        }        
     }
     else{
         res.send({
@@ -47,7 +53,7 @@ const authenticateJWT = async (req,res,next) => {
         return;
     }
     else {
-        //console.log(req.headers)
+        console.log(req.headers)
         const token = req.headers["authorization"].substring(7)
         //console.log(token)
 

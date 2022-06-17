@@ -52,7 +52,7 @@ const registerUser = (userData) => new Promise(async (resolve,reject) => {
 
 const loginUser = (userData) => new Promise(async (resolve,reject) => {
     let sql = "SELECT * FROM `BrokrUsers` WHERE email = " + db.escape(user.email) + "; ";
-    console.log(user.email)
+    //console.log(user.email)
     db.query(sql,(err,res,fields)=> {
         if(err) {
             console.error(err)

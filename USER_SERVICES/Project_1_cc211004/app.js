@@ -16,6 +16,7 @@ const path = require('path')
 
 const homeRoute = require('./routes/index')
 const usersRouter = require('./routes/users')
+const testRouter = require("./routes/testRoute")
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
@@ -32,6 +33,7 @@ app.set('view engine', 'jade')
 // 
 app.use('/', homeRoute)
 app.use('/users', usersRouter)
+app.use("/testRoute", testRouter)
 
 // 
 app.use((req, res) => {

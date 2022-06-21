@@ -7,7 +7,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/ping', function(req, res, next) {
-  res.send("this is working!");
+  res.send("PONG");
 });
 
 module.exports = router;

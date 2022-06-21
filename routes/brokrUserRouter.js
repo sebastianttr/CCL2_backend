@@ -14,5 +14,8 @@ router.get('/', function(req, res, next) {
 router.post("/register",brokrUserController.registerUser);
 router.post("/login",brokrUserController.loginUser);
 router.get("/getUser",brokrUserController.getUserData);
+router.post("/changeNames",brokrUserController.changeNames);
+router.post("/changePassword",brokrUserController.changePassword);
+router.get("/deleteUser",brokrUserController.deleteUser);
 
 module.exports = router;

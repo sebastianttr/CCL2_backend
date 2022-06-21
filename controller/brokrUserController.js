@@ -1,6 +1,6 @@
 const brokrUserModel = require("../models/brokrUserModel.js")
 const authenticationService = require("../services/authentication");
-
+const servicesModel = require("../models/servicesModel")
 
 const registerUser = (req,res,next) => {
     brokrUserModel.registerUser(req.body)
@@ -15,7 +15,7 @@ const registerUser = (req,res,next) => {
 }
 
 const loginUser = (req,res,next) => {
-    brokrUserModel.getUsers()
+    brokrUserModel.getUsers(true)
             .then((users) => {
                 authenticationService.authenticateUser(req.body,users,res);
             })
@@ -38,8 +38,57 @@ const getUserData = (req,res,next) => {
         })
 }
 
+const changeNames = (req,res,next) => {
+    brokrUserModel.changeNames(req.body)
+        .then(() => {
+            res.sendStatus(200);
+        })
+        .catch(err => {
+            res.status(500).send(err)
+        })
+}
+
+const changePassword = (req,res,next) => {
+    brokrUserModel.getUser(req.user.id,true)
+        .then(async (user) => {
+            let pwOK = await authenticationService.checkPassword(req.body.oldPassword,user.password);
+
+            if(pwOK){
+                brokrUserModel.changePassword(req.body.newPassword,user.ID)
+                    .then(() => {
+                        res.sendStatus(200);
+                    })
+                    .catch(err => {
+                        res.status(500).send(err)
+                    })
+            }           
+        })
+}
+
+const deleteUser = async (req,res,next) => {
+    const user = await brokrUserModel.getUser(req.user.id);
+
+    servicesModel.deleteAllServices(user)
+        .then(()=> {
+            brokrUserModel.removeUser(req.user.id)
+                .then(() => {
+                    res.send("OK")
+                })
+        })
+        .catch(err => {
+
+        })
+
+    /*
+    
+        */
+}
+
 module.exports = {
     registerUser,
     loginUser,
-    getUserData
+    getUserData,
+    changeNames,
+    changePassword,
+    deleteUser
 }

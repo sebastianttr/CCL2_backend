@@ -2,6 +2,7 @@ const servicesModel = require("../models/servicesModel")
 const services = require("../services/services")
 
 const getServices = (req,res,next) => {
+    console.log("User ID", req.user.id)
     servicesModel.getServices(req.user.id)
         .then((data) => {
             //console.log("data: " + data)
@@ -13,7 +14,7 @@ const getServices = (req,res,next) => {
 }
 
 const createService = (req,res,next) => {
-    servicesModel.createService("",req.body)
+    servicesModel.createService(req.user,req.body)
         .then(() => {
             res.send("Added a new service!");
         })

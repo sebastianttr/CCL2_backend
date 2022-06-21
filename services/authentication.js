@@ -20,9 +20,8 @@ const checkPassword = async (password,hash) => {
 const authenticateUser = async ({email,password}, users,res) => {
     const user = users.find(u => u.email === email);
 
-
-
     if(user) {
+        console.log(password,user.password)
         const pwIsOK = await checkPassword(password,user.password);
 
         if(pwIsOK){
@@ -53,7 +52,6 @@ const authenticateJWT = async (req,res,next) => {
         return;
     }
     else {
-        console.log(req.headers)
         const token = req.headers["authorization"].substring(7)
         //console.log(token)
 
@@ -95,5 +93,6 @@ const authenticateJWTSimple = (token) => new Promise((resolve,reject) => {
 module.exports = {
     authenticateUser,
     authenticateJWT,
-    authenticateJWTSimple
+    authenticateJWTSimple,
+    checkPassword
 }

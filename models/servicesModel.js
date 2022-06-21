@@ -21,8 +21,8 @@ const composeProjectPath = (user, service) => {
 
 // ports from 49152 to 65535 can be used
 // get all services, search for a the last usable port or gaps that are not filled by iterating through all
-const getUsablePort = () => new Promise(async (resolve,reject) => {
-    const services = await getServices();
+const getUsablePort = (userID) => new Promise(async (resolve,reject) => {
+    const services = await getServices(userID);
     
     const [portRangeStart, portRangeEnd] = [ parseInt(process.env.port_range_start) , parseInt(process.env.port_range_end) ]
     
@@ -72,7 +72,7 @@ const getService = (id) => new Promise((resolve,reject) => {
 const createService = (user,serviceData) => new Promise(async (resolve,reject) => {
 
     // get the last entry 
-    let usablePort = await getUsablePort();
+    let usablePort = await getUsablePort(user.id);
     let servicePath = composeProjectPath(user,serviceData);
 
     serviceData.servicePath = servicePath;
@@ -89,23 +89,60 @@ const createService = (user,serviceData) => new Promise(async (resolve,reject) =
     db.escape(serviceData.port) + ");";
 
     db.query(sql,(err,response,fields) => {
-        if(err){
+        if(err instanceof Error){
             console.error(err);
             reject(err);
         }
         else {
+            // COPY TEMPLATE TO PROJECTS FOLDER
+            services.initService(serviceData);
+
             resolve();
         }
     })
 
-    // COPY TEMPLATE TO PROJECTS FOLDER
-    services.initService(serviceData);
 
+})
+
+const deleteService = (user,serviceData) => new Promise((resolve,reject) => {
+    // TODO: remove single project;
+    resolve();
+})
+
+const deleteAllServices = (user) => new Promise((resolve,reject) => {
+    //console.log(user)
+    
+    // we can do it both async
+    getServices(user.ID)
+        .then(servicesArr => {
+            servicesArr.forEach(service => {
+                services.removeProjectFolder(service.servicePath)
+            })
+
+            let sql = "DELETE FROM `BrokrServices` WHERE `BrokrServices`.`userID` = " + parseInt(user.ID);
+
+            db.query(sql,(err,res,fields) => {
+                if(err instanceof Error){
+                    reject(err);
+                }
+
+                resolve();
+            })
+            
+        })
+        .catch(error => {
+            reject();
+        })
+
+    
+        
 })
 
 module.exports = {
     getServices,
     getService,
     createService,
-    getUsablePort
+    getUsablePort,
+    deleteService,
+    deleteAllServices
 }

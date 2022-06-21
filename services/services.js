@@ -126,6 +126,10 @@ const executeShell = (command,cwd,callback) => {
     sh.stderr.on('data', data => callback(data));  
 }
 
+const removeProjectFolder = (projectName) => {
+    exec("rm -rf ." + projectName);
+}
+
 
 
 module.exports = {
@@ -137,5 +141,6 @@ module.exports = {
     setFileContent,
     runService,
     stopService,
-    executeShell
+    executeShell,
+    removeProjectFolder
 }

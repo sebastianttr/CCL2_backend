@@ -22,7 +22,7 @@ const composeProjectPath = (user, service) => {
 // ports from 49152 to 65535 can be used
 // get all services, search for a the last usable port or gaps that are not filled by iterating through all
 const getUsablePort = (userID) => new Promise(async (resolve,reject) => {
-    const services = await getServices(userID);
+    const services = await getAllServices();
     
     const [portRangeStart, portRangeEnd] = [ parseInt(process.env.port_range_start) , parseInt(process.env.port_range_end) ]
     
@@ -36,6 +36,19 @@ const getUsablePort = (userID) => new Promise(async (resolve,reject) => {
     }
 
     reject({error:"no port found."});
+})
+
+const getAllServices = () => new Promise((resolve,reject) => {
+    let sql = "SELECT * FROM BrokrServices;";
+
+    db.query(sql,(err,res,fields) => {
+        if(err instanceof Error){
+            console.error(err);
+            reject(err);
+        }
+        //console.log(res)
+        resolve(res);
+    })
 })
 
 const getServices = (userID) => new Promise((resolve,reject) => {
@@ -141,8 +154,10 @@ const deleteAllServices = (user) => new Promise((resolve,reject) => {
 module.exports = {
     getServices,
     getService,
+    getAllServices,
     createService,
     getUsablePort,
     deleteService,
-    deleteAllServices
+    deleteAllServices,
+    composeProjectPath
 }

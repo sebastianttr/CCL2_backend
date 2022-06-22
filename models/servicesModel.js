@@ -117,9 +117,27 @@ const createService = (user,serviceData) => new Promise(async (resolve,reject) =
 
 })
 
-const deleteService = (user,serviceData) => new Promise((resolve,reject) => {
-    // TODO: remove single project;
-    resolve();
+const deleteService = (serviceID) => new Promise((resolve,reject) => {
+     // we can do it both async
+     getService(serviceID)
+        .then(service => {
+            console.log(service.servicePath)
+            services.removeProjectFolder(service.servicePath)
+            
+            let sql = "DELETE FROM `BrokrServices` WHERE `BrokrServices`.`ID` = " + parseInt(service.ID);
+
+            db.query(sql,(err,res,fields) => {
+                if(err instanceof Error){
+                    reject(err);
+                }
+
+                resolve();
+            })
+            
+        })
+        .catch(error => {
+            reject();
+        })   
 })
 
 const deleteAllServices = (user) => new Promise((resolve,reject) => {
@@ -145,11 +163,11 @@ const deleteAllServices = (user) => new Promise((resolve,reject) => {
         })
         .catch(error => {
             reject();
-        })
-
-    
-        
+        })    
 })
+
+
+
 
 module.exports = {
     getServices,

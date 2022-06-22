@@ -68,11 +68,21 @@ const setFileContent = (req,res,next) => {
         })
 }
 
+const deleteService = (req,res,next) => {
+    servicesModel.deleteService(req.query.id)
+        .then(() => {
+            res.send("ok")
+        })
+
+    //services.removeProjectFolder()
+}
+
 module.exports = {
     getServices,
     createService,
     getUsablePort,
     getDirectoryTree,
     getFileContent,
-    setFileContent
+    setFileContent,
+    deleteService
 }

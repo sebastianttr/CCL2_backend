@@ -4,42 +4,41 @@ networks:
   frontend:
     ipam:
       config:
-        - subnet: 172.26.0.0/16
-          gateway: 172.26.0.1
+        - subnet: 172.28.0.0/16
+          gateway: 172.28.0.1
 
 services:
-  # db:
-  #   image: mysql
-  #   restart: unless-stopped
-  #   command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-  #   volumes:
-  #     - db:/var/lib/mysql
-  #   environment:
-  #     - MYSQL_ROOT_PASSWORD="${DB_ROOT_PW}"
-  #     - MYSQL_PASSWORD="${DB_USER_PW}"
-  #     - MYSQL_DATABASE=g2e_users
-  #     - MYSQL_USER=g2e_useraccount
-  #   networks:
-  #     frontend:
-  #       ipv4_address: 172.26.0.10
-  #       aliases:
-  #         - db
+  db:
+    image: mysql
+    restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PW}
+      MYSQL_PASSWORD: ${DB_USER_PW}
+      MYSQL_DATABASE: 'cc211004'
+      MYSQL_USER: 'cc211004'
+      MYSQL_ROOT_HOST: '%'
+    networks:
+      frontend:
+        ipv4_address: 172.28.0.4
+        aliases:
+          - db
   
-
+  brokrfrontend:
+    build: ./frontend
+    restart: unless-stopped
+    networks:
+      frontend:
+        ipv4_address: 172.28.0.3
   
   brokrbackend:
     build: ./backend
     restart: unless-stopped
     networks:
       frontend:
-        ipv4_address: 172.26.0.2
-  
-  # presentr:
-  #  build: ./presentr
-  #  restart: unless-stopped
-  #  networks:
-  #   frontend:
-  #     ipv4_address: 172.26.0.3
+        ipv4_address: 172.28.0.2
 
 volumes:
   db:

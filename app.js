@@ -24,7 +24,10 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 // parse application/json
 app.use(bodyParser.json())
-app.use(cors())
+app.use(cors({
+  origin: '*',
+  optionsSuccessStatus: 200,
+}))
 
 
 
@@ -45,19 +48,14 @@ app.use('/users', usersRouter);
 app.use('/services',servicesRouter);
 
 
-
-
 require("./services/expressProxy").config(app).then((newApp) => {
-    // catch 404 and forward to error handler
-  app.use(function(req, res, next) {
-    next(createError(404));
-  });
-
-
+ 
   app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
+    console.log(`Server is up and running`)
   })
 })
+
+module.exports = {app}
 
 
 

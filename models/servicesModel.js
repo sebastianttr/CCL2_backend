@@ -1,4 +1,5 @@
 const db = require("../services/database").config
+const proxy = require("express-http-proxy");
 
 require('dotenv').config();
 
@@ -6,7 +7,6 @@ const services = require("../services/services")
 
 
 const composeProjectPath = (user, service) => {
-
     const basePath = "/USER_SERVICES"
 
     const userIDFromEmail = user.email.substring(0,user.email.indexOf("@"));
@@ -82,7 +82,7 @@ const getService = (id) => new Promise((resolve,reject) => {
     })
 })
 
-const createService = (user,serviceData) => new Promise(async (resolve,reject) => {
+const createService = (user,serviceData,app) => new Promise(async (resolve,reject) => {
 
     // get the last entry 
     let usablePort = await getUsablePort(user.id);
@@ -109,12 +109,19 @@ const createService = (user,serviceData) => new Promise(async (resolve,reject) =
         else {
             // COPY TEMPLATE TO PROJECTS FOLDER
             services.initService(serviceData);
+            addProxy(user.id,serviceData,app);
 
             resolve();
         }
     })
+})
 
-
+const addProxy = (userID,serviceData,app) => new Promise((resolve,reject) => {
+    getServices(userID)
+        .then((services) => {
+            const last = services.pop();
+            app.use("/service/"+last.ID,proxy("localhost:"+serviceData.port))
+        }) 
 })
 
 const deleteService = (serviceID) => new Promise((resolve,reject) => {

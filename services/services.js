@@ -18,7 +18,6 @@ const initService = (serviceData) => {
 
     })
 
-
     fs.readFile("." + serviceData.servicePath + "/.env", (error,data) => {
         let content = data.toString();
         content = content.replace("$PORT",serviceData.port);
@@ -129,10 +128,6 @@ const executeShell = (command,cwd,callback) => {
 const removeProjectFolder = (projectName) => {
     exec("rm -rf ." + projectName);
 }
-
-
-
-
 
 module.exports = {
     initService,

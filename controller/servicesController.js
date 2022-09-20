@@ -14,7 +14,7 @@ const getServices = (req,res,next) => {
 }
 
 const createService = (req,res,next) => {
-    servicesModel.createService(req.user,req.body)
+    servicesModel.createService(req.user,req.body,req.app)
         .then(() => {
             res.send("Added a new service!");
         })
